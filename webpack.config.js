@@ -11,7 +11,11 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
-            }
+            },
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+            },
         ]
     },
     resolve: {
@@ -27,7 +31,8 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin(),
-        new webpack.HotModuleReplacementPlugin()
+        new HtmlWebpackPlugin({
+            title: "Star Cats"
+        }),
     ]
 };
