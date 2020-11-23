@@ -32,7 +32,8 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: "Star Cats"
+            title: "Star Cats",
+            template: "index.html",
         }),
     ]
 };

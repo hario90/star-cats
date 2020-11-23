@@ -1,4 +1,4 @@
-const form = (rootEl: HTMLDivElement, startGame: () => void) => {
+const form = (rootEl: HTMLElement, startGame: () => void) => {
   const title = document.createElement("h1");
   const titleText = document.createTextNode("Star Cats");
   title.appendChild(titleText);
