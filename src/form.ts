@@ -1,4 +1,4 @@
-const form = (rootEl: HTMLElement, startGame: () => void) => {
+const form = (rootEl: HTMLElement, startGame: (name: string) => void) => {
   const title = document.createElement("h1");
   const titleText = document.createTextNode("Star Cats");
   title.appendChild(titleText);
@@ -15,9 +15,9 @@ const form = (rootEl: HTMLElement, startGame: () => void) => {
   centerEl.className = "name-form";
 
   nameInput.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.code.toLowerCase() === "enter") {
+    if (e.code.toLowerCase() === "enter" && nameInput.value) {
       centerEl.remove();
-      startGame();
+      startGame(nameInput.value);
     }
   })
 
