@@ -1,61 +1,47 @@
-const halfShipWidth = 16;
-const halfShipHeight = 16;
-const shipWidth = 32;
-const shipHeight = 32;
-const LEFT = "ArrowLeft";
-const RIGHT = "ArrowRight";
-const UP = "ArrowUp";
-const DOWN = "ArrowDown";
-const incrementSize = 5;
+import { Component } from "./types";
+
+export const halfShipWidth = 16;
+export const halfShipHeight = 16;
 const RAD = Math.PI / 180;
 
-export class PlayerShip {
-  private x: number = 0;
-  private y: number = 0;
-  private deg: number = 0;
-  private context: CanvasRenderingContext2D;
-  protected img: HTMLImageElement;
-  private canvasMidX: number;
-  private canvasMidY: number;
+export class PlayerShip implements Component {
+  public x: number = 0;
+  public y: number = 0;
+  public deg: number = 0;
+  private img: HTMLImageElement;
+  private loaded = false;
 
-  constructor(context: CanvasRenderingContext2D, canvasMidX: number, canvasMidY: number) {
+  constructor(canvasMidX: number, canvasMidY: number) {
     this.x = canvasMidX - halfShipWidth;
     this.y = canvasMidY - halfShipHeight;
     this.img = new Image();
     this.img.src = "assets/spaceship.png";
-    this.img.onload = this.onload.bind(this);
-    this.context = context;
-    this.canvasMidX = canvasMidX;
-    this.canvasMidY = canvasMidY;
+    this.img.onload = () => this.loaded = true;
+    this.getPosition = this.getPosition.bind(this);
   }
 
-  onload() {
-    this.context.drawImage(this.img, this.x, this.y);
+  getPosition(): number[] {
+    return [this.x, this.y];
+  }
 
-    document.addEventListener("keydown", (e) => {
-      // clear the ship
-      // this.context.clearRect(0, 0, 2 * this.canvasMidX, 2 * this.canvasMidY);
-      this.context.clearRect(this.x, this.y, shipWidth, shipHeight)
-      this.context.save()
-      switch(e.key) {
-        case UP:
-          this.y -= incrementSize;
-          break;
-        case DOWN:
-          this.y += incrementSize;
-          break;
-        case LEFT:
-          this.deg = (this.deg - 20) % 360;
-          this.context.rotate(this.deg * RAD);
-          // this.x -= incrementSize;
-          break;
-        case RIGHT:
-          this.deg = (this.deg + 20) % 360;
-          this.context.rotate(this.deg * RAD);
-          break;
-      }
-      this.context.drawImage(this.img, this.x, this.y);
-      this.context.restore();
-    })
+  setPosition(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  draw(context: CanvasRenderingContext2D): void {
+    if (!this.loaded) {
+      console.error("Image has not loaded yet");
+      return;
+    }
+    context.save();
+    context.translate(this.x, this.y);
+    context.rotate(this.deg * RAD);
+    context.drawImage(this.img, 0 - halfShipWidth, 0 - halfShipHeight);
+    context.restore();
+  }
+
+  isLoaded(): boolean {
+    return this.loaded;
   }
 }

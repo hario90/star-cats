@@ -1,23 +1,16 @@
 import './style.css';
-import { Component } from "./component";
-import { PlayerShip } from "./player-ship";
+import { ImageComponent } from "./component";
+import { Renderer } from "./renderer";
 
-const startGame = () => {
-  const canvas = (document.getElementById("game-space")  as HTMLCanvasElement) || document.createElement("canvas");
-  const context = canvas.getContext("2d");
+const renderer = new Renderer();
+renderer.addComponent(new ImageComponent({
+  src: "assets/ufo.png",
+  x: 0,
+  y: 0
+}));
 
-  const canvasMidX =  Math.floor(canvas.width / 2);
-  const canvasMidY = Math.floor(canvas.height / 2);
+(async () => {
+  await renderer.pollUntilReady();
+  renderer.draw();
+})();
 
-  if (context) {
-    new Component({
-      src: "assets/ufo.png",
-      context,
-      x: 0,
-      y: 0
-    });
-    new PlayerShip(context, canvasMidX, canvasMidY);
-  }
-}
-
-startGame();

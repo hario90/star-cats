@@ -1,23 +1,13 @@
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+html, body {
+    padding: 0;
+    margin: 0;
 }
 
-#app {
-    flex: 1;
-}
-
-#controls {
-    flex: 0 0 auto;
-}
-
-canvas {
-    background-color: black;
+#app, canvas {
     height: 100%;
     width: 100%;
 }
 
-input {
-    display: block;
+canvas {
+    background-color: black;
 }
