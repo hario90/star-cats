@@ -1,4 +1,4 @@
-import { halfShipHeight, halfShipWidth, PlayerShip } from "./player-ship";
+import { halfShipHeight, halfShipWidth, PlayerShip, RAD } from "./player-ship";
 import { Component } from "./types";
 import { timeout } from "./util";
 
@@ -7,6 +7,8 @@ const RIGHT = "ArrowRight";
 const UP = "ArrowUp";
 const DOWN = "ArrowDown";
 const incrementSize = 5;
+const DEGREE_INCREMENT = 10;
+const DEGREE_OF_SHIP_NOSE_FROM_POS_X_AXIS = 90;
 
 export class Renderer {
   private components: Component[] = [];
@@ -26,28 +28,37 @@ export class Renderer {
   }
 
   getNextPosition() {
-    const heading = this.ship.deg;
+    let heading = this.ship.deg - DEGREE_OF_SHIP_NOSE_FROM_POS_X_AXIS;
+    if (heading < 0) {
+      heading = 360 + heading;
+    }
     const x = this.ship.x;
     const y = this.ship.y;
     let deg = heading;
-    if (heading <= 90) {
-      const adjacent = Math.cos(deg) * incrementSize;
-      const opposite = Math.sin(deg) * incrementSize;
+    if (heading < 90) {
+      const adjacent = Math.cos(deg * RAD) * incrementSize;
+      const opposite = Math.sin(deg * RAD) * incrementSize;
       this.ship.setPosition(x + adjacent, y + opposite);
-    } else if (heading <= 180) {
+    } else if (heading === 90) {
+      this.ship.setPosition(x, y + incrementSize)
+    } else if (heading < 180) {
       deg = 180 - heading;
-      const adjacent = Math.cos(deg) * incrementSize;
-      const opposite = Math.sin(deg) * incrementSize;
+      const adjacent = Math.cos(deg * RAD) * incrementSize;
+      const opposite = Math.sin(deg * RAD) * incrementSize;
       this.ship.setPosition(x - adjacent, y + opposite);
-    } else if (heading <= 270) {
+    } else if (heading === 180) {
+      this.ship.setPosition(x - incrementSize, y);
+    } else if (heading < 270) {
       deg = heading - 180;
-      const adjacent = Math.cos(deg) * incrementSize;
-      const opposite = Math.sin(deg) * incrementSize;
+      const adjacent = Math.cos(deg * RAD) * incrementSize;
+      const opposite = Math.sin(deg * RAD) * incrementSize;
       this.ship.setPosition(x - adjacent, y - opposite);
+    } else if (heading === 270) {
+      this.ship.setPosition(x, y - incrementSize);
     } else {
       deg = 360 - heading;
-      const adjacent = Math.cos(deg) * incrementSize;
-      const opposite = Math.sin(deg) * incrementSize;
+      const adjacent = Math.cos(deg * RAD) * incrementSize;
+      const opposite = Math.sin(deg * RAD) * incrementSize;
       this.ship.setPosition(x + adjacent, y - opposite)
     }
 
@@ -71,14 +82,14 @@ export class Renderer {
           this.draw();
           break;
         case LEFT:
-          this.ship.deg = this.ship.deg - 20;
+          this.ship.deg = this.ship.deg - DEGREE_INCREMENT;
           if (this.ship.deg < 0) {
             this.ship.deg = 360 + this.ship.deg;
           }
           this.draw();
           break;
         case RIGHT:
-          this.ship.deg = (this.ship.deg + 20) % 360;
+          this.ship.deg = (this.ship.deg + DEGREE_INCREMENT) % 360;
           this.draw();
           break;
       }

@@ -2,7 +2,7 @@ import { Component } from "./types";
 
 export const halfShipWidth = 16;
 export const halfShipHeight = 16;
-const RAD = Math.PI / 180;
+export const RAD = Math.PI / 180;
 
 export class PlayerShip implements Component {
   public x: number = 0;
