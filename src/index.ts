@@ -11,6 +11,6 @@ renderer.addComponent(new ImageComponent({
 
 (async () => {
   await renderer.pollUntilReady();
-  renderer.draw();
+  renderer.animate();
 })();
 

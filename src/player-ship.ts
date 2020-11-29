@@ -10,13 +10,21 @@ const frameToLocation = new Map([
   [BattleShipFrame.THRUST_MED_LOW, [4 * halfShipWidth, 0]],
   [BattleShipFrame.THRUST_MED, [0, 2 * halfShipHeight]],
   [BattleShipFrame.THRUST_HI, [2 * halfShipWidth, 2 * halfShipHeight]]
-])
+]);
+
+const speedToFrame = new Map([
+  [1, BattleShipFrame.NORMAL],
+  [2, BattleShipFrame.THRUST_LOW],
+  [3, BattleShipFrame.THRUST_MED_LOW],
+  [4, BattleShipFrame.THRUST_MED],
+  [5, BattleShipFrame.THRUST_HI],
+]);
 
 export class PlayerShip implements Component {
   public x: number = 0;
   public y: number = 0;
   public deg: number = 0;
-  public frame: BattleShipFrame = BattleShipFrame.NORMAL;
+  public speed: number = 1;
   private img: HTMLImageElement;
   private loaded = false;
 
@@ -38,14 +46,19 @@ export class PlayerShip implements Component {
     this.y = y;
   }
 
+  incrementFrame() {
+
+  }
+
   draw(context: CanvasRenderingContext2D): void {
     if (!this.loaded) {
       console.error("Image has not loaded yet");
       return;
     }
-    const srcLocation = frameToLocation.get(this.frame);
+    const frame = speedToFrame.get(this.speed) || BattleShipFrame.NORMAL;
+    const srcLocation = frameToLocation.get(frame);
     if (!srcLocation) {
-      throw new Error(`Could not find source image for the frame: ${this.frame}`);
+      throw new Error(`Could not find source image for the frame: ${frame}`);
     } else if (srcLocation.length < 2) {
       throw new Error(`Something is wrong with the frameToLocation map`);
     }
