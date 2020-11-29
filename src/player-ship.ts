@@ -46,10 +46,6 @@ export class PlayerShip implements Component {
     this.y = y;
   }
 
-  incrementFrame() {
-
-  }
-
   draw(context: CanvasRenderingContext2D): void {
     if (!this.loaded) {
       console.error("Image has not loaded yet");
