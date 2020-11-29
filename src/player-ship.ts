@@ -1,13 +1,22 @@
-import { Component } from "./types";
+import { BattleShipFrame, Component } from "./types";
 
 export const halfShipWidth = 16;
-export const halfShipHeight = 16;
+export const halfShipHeight = 15;
 export const RAD = Math.PI / 180;
+
+const frameToLocation = new Map([
+  [BattleShipFrame.NORMAL, [0, 0]],
+  [BattleShipFrame.THRUST_LOW, [2 * halfShipWidth, 0]],
+  [BattleShipFrame.THRUST_MED_LOW, [4 * halfShipWidth, 0]],
+  [BattleShipFrame.THRUST_MED, [0, 2 * halfShipHeight]],
+  [BattleShipFrame.THRUST_HI, [2 * halfShipWidth, 2 * halfShipHeight]]
+])
 
 export class PlayerShip implements Component {
   public x: number = 0;
   public y: number = 0;
   public deg: number = 0;
+  public frame: BattleShipFrame = BattleShipFrame.NORMAL;
   private img: HTMLImageElement;
   private loaded = false;
 
@@ -15,7 +24,7 @@ export class PlayerShip implements Component {
     this.x = canvasMidX - halfShipWidth;
     this.y = canvasMidY - halfShipHeight;
     this.img = new Image();
-    this.img.src = "assets/spaceship.png";
+    this.img.src = "assets/ship.png";
     this.img.onload = () => this.loaded = true;
     this.getPosition = this.getPosition.bind(this);
   }
@@ -34,10 +43,16 @@ export class PlayerShip implements Component {
       console.error("Image has not loaded yet");
       return;
     }
+    const srcLocation = frameToLocation.get(this.frame);
+    if (!srcLocation) {
+      throw new Error(`Could not find source image for the frame: ${this.frame}`);
+    } else if (srcLocation.length < 2) {
+      throw new Error(`Something is wrong with the frameToLocation map`);
+    }
     context.save();
     context.translate(this.x, this.y);
     context.rotate(this.deg * RAD);
-    context.drawImage(this.img, 0 - halfShipWidth, 0 - halfShipHeight);
+    context.drawImage(this.img, srcLocation[0], srcLocation[1], 2 * halfShipWidth, 2 * halfShipHeight,0 - halfShipWidth, 0 - halfShipHeight, 2 * halfShipWidth, 2 * halfShipHeight);
     context.restore();
   }
 
