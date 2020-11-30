@@ -1,4 +1,5 @@
-import { halfShipHeight, halfShipWidth, PlayerShip, RAD } from "./player-ship";
+import { Background, BOARD_HEIGHT, BOARD_WIDTH } from "./background";
+import { halfShipWidth, PlayerShip, RAD } from "./player-ship";
 import { Component } from "./types";
 import { timeout } from "./util";
 
@@ -17,9 +18,13 @@ export class Renderer {
   private context: CanvasRenderingContext2D | null;
   private ship: PlayerShip;
   private showThrusters = false;
+  private background: Background;
 
   constructor() {
     this.context = this.canvas.getContext("2d");
+    if (!this.context) {
+      throw new Error("no context");
+    }
     const canvasMidX =  Math.floor(this.canvas.width / 2);
     const canvasMidY = Math.floor(this.canvas.height / 2);
     this.ship = new PlayerShip(canvasMidX, canvasMidY)
@@ -28,6 +33,15 @@ export class Renderer {
     this.animate = this.animate.bind(this);
     this.moveAndDraw = this.moveAndDraw.bind(this);
     this.getNextPosition = this.getNextPosition.bind(this);
+
+    // use another canvas to create and render the background
+    // so that the background is bigger than the frame canvas
+    const backgroundCanvas = document.getElementById("background") as HTMLCanvasElement;
+    const backgroundCtx = backgroundCanvas.getContext("2d");
+    this.background = new Background();
+    if (backgroundCtx) {
+      this.background.create(backgroundCtx, backgroundCanvas);
+    }
   }
 
   addComponent(component: Component) {
@@ -43,38 +57,45 @@ export class Renderer {
     const x = this.ship.x;
     const y = this.ship.y;
     let deg = heading;
+    // not being super exact here. using halfShipWidth in both cases for simplicity
+    const minX = halfShipWidth;
+    const maxX = BOARD_WIDTH - halfShipWidth;
+    const minY = halfShipWidth;
+    const maxY = BOARD_HEIGHT - halfShipWidth;
     if (heading < 90) {
       const adjacent = Math.cos(deg * RAD) * travelDistance;
       const opposite = Math.sin(deg * RAD) * travelDistance;
-      this.ship.setPosition(x + adjacent, y + opposite);
+      this.ship.setPosition(Math.min(x + adjacent, maxX), Math.min(y + opposite, maxY));
     } else if (heading === 90) {
-      this.ship.setPosition(x, y + travelDistance)
+      this.ship.setPosition(x, Math.min(y + travelDistance, maxY));
     } else if (heading < 180) {
       deg = 180 - heading;
       const adjacent = Math.cos(deg * RAD) * travelDistance;
       const opposite = Math.sin(deg * RAD) * travelDistance;
-      this.ship.setPosition(x - adjacent, y + opposite);
+      this.ship.setPosition(Math.max(x - adjacent, minX), Math.min(y + opposite, maxY));
     } else if (heading === 180) {
-      this.ship.setPosition(x - travelDistance, y);
+      this.ship.setPosition(Math.max(x - travelDistance, minX), y);
     } else if (heading < 270) {
       deg = heading - 180;
       const adjacent = Math.cos(deg * RAD) * travelDistance;
       const opposite = Math.sin(deg * RAD) * travelDistance;
-      this.ship.setPosition(x - adjacent, y - opposite);
+      this.ship.setPosition(Math.max(x - adjacent, minX), Math.max(y - opposite, minY));
     } else if (heading === 270) {
-      this.ship.setPosition(x, y - travelDistance);
+      this.ship.setPosition(x, Math.max(y - travelDistance, minY));
     } else {
       deg = 360 - heading;
       const adjacent = Math.cos(deg * RAD) * travelDistance;
       const opposite = Math.sin(deg * RAD) * travelDistance;
-      this.ship.setPosition(x + adjacent, y - opposite)
+      this.ship.setPosition(Math.min(x + adjacent, maxX), Math.max(y - opposite, minY))
     }
   }
 
   async pollUntilReady() {
-    while (this.components.map((c) => c.isLoaded()).some((loaded) => !loaded)) {
+    while (!this.background.isLoaded() || this.components.map((c) => c.isLoaded()).some((loaded) => !loaded)) {
       await timeout(1000)
     }
+    // don't show canvas until everything is loaded
+    this.canvas.className = "visible";
     document.addEventListener("keydown", (e) => {
       e.preventDefault();
       if (!this.context) {
@@ -82,8 +103,8 @@ export class Renderer {
       }
       switch(e.key) {
         case UP:
-          // this.ship.speed = 2;
           this.showThrusters = true;
+          this.ship.speed =  MAX_SPEED;
           break;
         case DOWN:
           if (this.ship.speed > 1) {
@@ -108,7 +129,14 @@ export class Renderer {
     if (!this.context) {
       return;
     }
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const canvasWidth = this.canvas.width;
+    const canvasHeight = this.canvas.height;
+    this.context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // draw background first
+    if (this.background) {
+      this.background.draw(this.context, this.ship.x - (canvasWidth / 2), this.ship.y - (canvasHeight / 2), canvasWidth, canvasHeight);
+    }
 
     this.ship.draw(this.context);
     for (const component of this.components) {

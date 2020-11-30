@@ -27,8 +27,12 @@ export class PlayerShip implements Component {
   public speed: number = 1;
   private img: HTMLImageElement;
   private loaded = false;
+  private canvasMidX: number;
+  private canvasMidY: number;
 
   constructor(canvasMidX: number, canvasMidY: number) {
+    this.canvasMidX = canvasMidX;
+    this.canvasMidY = canvasMidY;
     this.x = canvasMidX - halfShipWidth;
     this.y = canvasMidY - halfShipHeight;
     this.img = new Image();
@@ -59,7 +63,8 @@ export class PlayerShip implements Component {
       throw new Error(`Something is wrong with the frameToLocation map`);
     }
     context.save();
-    context.translate(this.x, this.y);
+    // always render ship at center of screen
+    context.translate(this.canvasMidX, this.canvasMidY);
     context.rotate(this.deg * RAD);
     context.drawImage(this.img, srcLocation[0], srcLocation[1], 2 * halfShipWidth, 2 * halfShipHeight,0 - halfShipWidth, 0 - halfShipHeight, 2 * halfShipWidth, 2 * halfShipHeight);
     context.restore();

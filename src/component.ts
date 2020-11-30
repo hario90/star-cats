@@ -7,7 +7,7 @@ export interface ComponentProps {
 }
 
 export class ImageComponent implements Component {
-  protected img: HTMLImageElement;
+  private img: HTMLImageElement;
   private x: number = 0;
   private y: number = 0;
   private loaded: boolean = false;
