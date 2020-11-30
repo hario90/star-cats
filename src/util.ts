@@ -17,3 +17,7 @@ export function setupCanvas(canvas: HTMLCanvasElement) {
   return  { ctx, dpr };
 }
 
+export const timeout = (ms: number) =>
+  new Promise((resolve: (value: any) => void) => {
+    setTimeout(resolve, ms);
+  });

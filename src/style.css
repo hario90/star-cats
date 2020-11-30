@@ -1,35 +1,20 @@
-#app, body, html {
-    height: 100%;
-    width: 100%;
-    background-color: aliceblue;
-    margin: 0;
+html, body {
     padding: 0;
+    margin: 0;
+    overflow: hidden;
 }
 
-#app, body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-#app {
-    flex: 1;
-}
-
-#icon-credit {
-    flex: 0 0 auto;
-}
-
-.name-form {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-canvas {
-    background-color: black;
+#app, canvas {
     height: 100%;
     width: 100%;
+    overflow: hidden;
+}
+
+canvas {
+    background-color: #262626;
+    display: none;
+}
+
+canvas.visible {
+    display: block;
 }
