@@ -19,6 +19,7 @@ export class ImageComponent implements Component {
     this.x = x;
     this.y = y;
     this.draw = this.draw.bind(this);
+    this.getPosition()
   }
 
   draw(context: CanvasRenderingContext2D) {

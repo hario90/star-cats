@@ -1,26 +1,37 @@
 export const BOARD_WIDTH = 3200;
 export const BOARD_HEIGHT = 2000;
-
+const OPACITY = 0.15;
+const HALF_BOARD_WIDTH = BOARD_WIDTH / 2;
+const HALF_BOARD_HEIGHT = BOARD_HEIGHT / 2;
+/**
+ * Responsible for rendering backdrop for the game.
+ */
 export class Background {
   private img: HTMLImageElement;
   private loaded: boolean = false;
 
   constructor() {
     this.img = new Image();
-    this.img.onload = () => { this.loaded = true; };
+    this.img.onload = () => this.loaded = true;
     this.draw = this.draw.bind(this);
   }
 
   createQuadrants(context: CanvasRenderingContext2D) {
-    const opacity = 0.15;
-    context.fillStyle = `rgba(255, 0, 0, ${opacity})`;
-    context.fillRect(0, 0, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
-    context.fillStyle = `rgba(0, 255, 0, ${opacity})`;
-    context.fillRect(BOARD_WIDTH / 2, 0, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
-    context.fillStyle = `rgba(0, 0, 255, ${opacity})`;
-    context.fillRect(0, BOARD_HEIGHT / 2, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
-    context.fillStyle = `rgba(255, 255, 0, ${opacity})`;
-    context.fillRect(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
+    // Upper left quadrant is red
+    context.fillStyle = `rgba(255, 0, 0, ${OPACITY})`;
+    context.fillRect(0, 0, HALF_BOARD_WIDTH, HALF_BOARD_HEIGHT);
+
+    // Upper right quadrant is green
+    context.fillStyle = `rgba(0, 255, 0, ${OPACITY})`;
+    context.fillRect(HALF_BOARD_WIDTH, 0, HALF_BOARD_WIDTH, HALF_BOARD_HEIGHT);
+
+    // Bottom left quadrant is blue
+    context.fillStyle = `rgba(0, 0, 255, ${OPACITY})`;
+    context.fillRect(0, HALF_BOARD_HEIGHT, HALF_BOARD_WIDTH, HALF_BOARD_HEIGHT);
+
+    // Bottom right quadrant is yellow
+    context.fillStyle = `rgba(255, 255, 0, ${OPACITY})`;
+    context.fillRect(HALF_BOARD_WIDTH, HALF_BOARD_HEIGHT, HALF_BOARD_WIDTH, HALF_BOARD_HEIGHT);
   }
 
   createStars(context: CanvasRenderingContext2D) {
@@ -41,6 +52,8 @@ export class Background {
     context.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
     this.createQuadrants(context);
     this.createStars(context);
+
+    // create an image from the canvas
     this.img.src = canvas.toDataURL();
   }
 

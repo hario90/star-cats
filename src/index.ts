@@ -10,6 +10,7 @@ renderer.addComponent(new ImageComponent({
 }));
 
 (async () => {
+  // Image assets need to load. Don't start animating until they're ready.
   await renderer.pollUntilReady();
   renderer.animate();
 })();
