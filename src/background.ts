@@ -1,7 +1,6 @@
 export const BOARD_WIDTH = 3200;
 export const BOARD_HEIGHT = 2000;
 
-
 export class Background {
   private img: HTMLImageElement;
   private loaded: boolean = false;
@@ -12,11 +11,21 @@ export class Background {
     this.draw = this.draw.bind(this);
   }
 
-  create(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+  createQuadrants(context: CanvasRenderingContext2D) {
+    const opacity = 0.15;
+    context.fillStyle = `rgba(255, 0, 0, ${opacity})`;
+    context.fillRect(0, 0, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
+    context.fillStyle = `rgba(0, 255, 0, ${opacity})`;
+    context.fillRect(BOARD_WIDTH / 2, 0, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
+    context.fillStyle = `rgba(0, 0, 255, ${opacity})`;
+    context.fillRect(0, BOARD_HEIGHT / 2, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
+    context.fillStyle = `rgba(255, 255, 0, ${opacity})`;
+    context.fillRect(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, BOARD_WIDTH / 2, BOARD_HEIGHT / 2);
+  }
+
+  createStars(context: CanvasRenderingContext2D) {
     const starPadding = 40;
     const starDiameter = 2;
-    context.fillStyle = "black";
-    context.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
     for (let i = 0; i < BOARD_WIDTH; i += starPadding) {
       for (let j = 0; j < BOARD_HEIGHT; j += starPadding) {
         const x = i + (starPadding * Math.random());
@@ -25,6 +34,13 @@ export class Background {
         context.fillRect(x, y, starDiameter, starDiameter);
       }
     }
+  }
+
+  create(context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+    context.fillStyle = "black";
+    context.fillRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
+    this.createQuadrants(context);
+    this.createStars(context);
     this.img.src = canvas.toDataURL();
   }
 
